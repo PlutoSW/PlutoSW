@@ -5,22 +5,21 @@ import {
 import li from './li.js';
 
 class ul extends PlutoComponent {
-    constructor(data) {
-        super(data.name);
-        this.data = data.data;
+    constructor(props) {
+        super(props.name, props.data);
     }
-    onDataPush(){
-        
+    onDataPush() {
+        this.render(this.element, this.dataDiff);
     }
-    render() {
+    render(target = Pluto.ul, data = this.data) {
         var elem = [];
-        for (const data of this.data) {
+        for (const d of data) {
             elem.push({
                 component: li,
-                props: data
+                props: d
             });
         }
-        return Pluto.ul.child(...elem);
+        return target.child(...elem);
     }
 }
 export {

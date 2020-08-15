@@ -1,3 +1,4 @@
+import PlutoComponent from './PlutoComponent.js';
 window.PlutoSupportedTags = ["a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi", "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "font", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "i", "iframe", "img", "input", "ins", "kbd", "label", "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav", "noframes", "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup", "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"];
 const Pluto = {
     query: (query) => {
@@ -245,63 +246,6 @@ class PlutoElement {
     }
     toString() {
         return this.element.outerHTML;
-    }
-}
-
-class PlutoComponent {
-    constructor(name) {
-        this.element = null;
-        if (typeof name !== "object") {
-            window.PlutoComponents = (window.PlutoComponents) ? window.PlutoComponents : {};
-            window.PlutoComponents[name] = this;
-            this.name = name;
-        } else {
-            this.dataDefault = name;
-        }
-        this.onCreate();
-    }
-    set data(data) {
-        if (Array.isArray(this.dataDefault) || Array.isArray(data)) {
-            this.dataDefault = data;
-        } else {
-            this.dataDefault = Object.assign(this.dataDefault, data);
-        }
-        if (this.mounted) {
-            this.onDataChange();
-        }
-        return this;
-    }
-    pushData(data) {
-        if (Array.isArray(this.dataDefault) || Array.isArray(data)) {
-            this.dataDefault.push(data);
-        } else {
-            this.dataDefault = Object.assign(this.dataDefault, data);
-        }
-        if (this.mounted) {
-            this.onDataChange();
-        }
-        return this;
-    }
-    get data() {
-        return this.dataDefault;
-    }
-    onDataChange() {
-        this.element.replace(this._render().element)
-    }
-    onCreate() {
-
-    }
-    onMount() {
-
-    }
-    _render() {
-        this.element = this.render();
-        this.mounted = true;
-        this.onMount();
-        return this.element;
-    }
-    toString() {
-        return this.render();
     }
 }
 export {
