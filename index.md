@@ -1,37 +1,70 @@
-## Welcome to GitHub Pages
+## PlutoSW DOM Manipulator and Component Manager
 
-You can use the [editor on GitHub](https://github.com/PlutoSW/PlutoSW/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Example
 
 ```markdown
-Syntax highlighted code block
+class ul extends PlutoComponent {
+    constructor(props) {
+        super(props.name, props.data);
+    }
+    onDataPush() {
+        this.render(this.element, this.dataDiff);
+    }
+    render(target = Pluto.ul, data = this.data) {
+        var elem = [];
+        for (const d of data) {
+            elem.push({
+                component: li,
+                props: d
+            });
+        }
+        return target.child(...elem);
+    }
+}
+class li extends PlutoComponent {
+    constructor(data) {
+        super(data);
+        this.in = 0;
+    }
+    click() {
+        this.element.attr('contenteditable', 'true').focus();
+        document.execCommand('selectAll', false, null);
+    }
+    render() {
+        return Pluto.li.props({
+            innerText: this.data.key
+        }).on("click", () => this.click()).on("blur", () => {
+            this.data = {
+                key: this.element.text()
+            }
+        });
+    }
+}
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+var ulcontainer = {
+        component: ul,
+        props: {
+            name: "ul",
+            data: [{
+                "key": "li 1"
+            }, {
+                "key": "li 2"
+            }]
+        }
+    },
+    result = Pluto.div;
+Pluto.query(document.body).render(
+    ulcontainer,
+    Pluto.button.text("ekle").on("click", () => {
+        PlutoComponents.ul.pushData({
+            "key": "li " + (PlutoComponents.ul.data.length + 1)
+        });
+    }),
+    Pluto.button.text("getir").on("click", () => {
+        result.text(JSON.stringify(PlutoComponents.ul.data));
+    }),
+    result
+)
 ```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/PlutoSW/PlutoSW/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
