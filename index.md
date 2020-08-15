@@ -73,9 +73,9 @@ var result = Pluto.div,
             result: result,
             name: "ul",
             data: [{
-                "key": "li 1"
+                "key": "li 1 (Click for edit)"
             }, {
-                "key": "li 2"
+                "key": "li 2 (Click for edit)"
             }]
         }
     };
@@ -145,9 +145,9 @@ var result = Pluto.div,
             result: result,
             name: "ul",
             data: [{
-                "key": "li 1"
+                "key": "li 1 (Click for edit)"
             }, {
-                "key": "li 2"
+                "key": "li 2 (Click for edit)"
             }]
         }
     };
