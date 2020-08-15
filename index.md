@@ -2,6 +2,24 @@
 
 
 ### Example
+<style>
+div#root {
+    padding: 15px;
+    border: 1px solid;
+    margin-bottom: 30px;
+}
+
+div#root div {
+    padding: 5px;
+    background: lightgray;
+    color: black;
+}
+
+div#root button {
+    margin-bottom: 9px;
+    margin-right: 8px;
+}   
+</style>
 <div id="root"></div>
 <script type="module">
     import {Pluto,PlutoComponent} from './PlutoSW.js';
@@ -58,12 +76,12 @@ var ulcontainer = {
     result = Pluto.div;
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
-    Pluto.button.text("ekle").on("click", () => {
+    Pluto.button.text("addData").on("click", () => {
         PlutoComponents.ul.pushData({
             "key": "li " + (PlutoComponents.ul.data.length + 1)
         });
     }),
-    Pluto.button.text("getir").on("click", () => {
+    Pluto.button.text("getData").on("click", () => {
         result.text(JSON.stringify(PlutoComponents.ul.data));
     }),
     result
@@ -123,12 +141,12 @@ var ulcontainer = {
     result = Pluto.div;
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
-    Pluto.button.text("ekle").on("click", () => {
+    Pluto.button.text("addData").on("click", () => {
         PlutoComponents.ul.pushData({
             "key": "li " + (PlutoComponents.ul.data.length + 1)
         });
     }),
-    Pluto.button.text("getir").on("click", () => {
+    Pluto.button.text("getData").on("click", () => {
         result.text(JSON.stringify(PlutoComponents.ul.data));
     }),
     result
