@@ -1,4 +1,4 @@
-## PlutoSW DOM Manipulator and Component Manager
+## PlutoSW -  DOM Manipulator and Component Manager
 
 
 ### Example
