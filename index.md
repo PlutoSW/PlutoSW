@@ -4,17 +4,16 @@
 ### Example
 <style>
 div#root {
-    padding: 15px;
+     padding: 15px;
     border: 1px solid;
     margin-bottom: 30px;
 }
-
-div#root div {
+div#root code {
+    display: block;
     padding: 5px;
-    background: lightgray;
     color: black;
+    background: aliceblue;
 }
-
 div#root button {
     margin-bottom: 9px;
     margin-right: 8px;
@@ -22,13 +21,18 @@ div#root button {
 </style>
 <div id="root"></div>
 <script type="module">
-    import {Pluto,PlutoComponent} from './PlutoSW.js';
-    class ul extends PlutoComponent {
+import {Pluto,PlutoComponent} from './PlutoSW.js';
+class ul extends PlutoComponent {
     constructor(props) {
         super(props.name, props.data);
+        this.props = props;
     }
     onDataPush() {
         this.render(this.element, this.dataDiff);
+    }
+    onMount(){
+        console.log(this.data);
+        this.props.result.text(JSON.stringify(PlutoComponents.ul.data));
     }
     render(target = Pluto.ul, data = this.data) {
         var elem = [];
