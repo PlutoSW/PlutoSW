@@ -50,6 +50,7 @@ export default class PlutoComponent {
         }
         return this;
     }
+    
     pushData(data) {
         if (!Array.isArray(this.dataDefault)) {
             return;
