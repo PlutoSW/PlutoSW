@@ -56,7 +56,7 @@ var ulcontainer = {
         }
     },
     result = Pluto.div;
-Pluto.query(document.getElementById("root)).render(
+Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("ekle").on("click", () => {
         PlutoComponents.ul.pushData({
@@ -121,7 +121,7 @@ var ulcontainer = {
         }
     },
     result = Pluto.div;
-Pluto.query(document.getElementById("root)).render(
+Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("ekle").on("click", () => {
         PlutoComponents.ul.pushData({
