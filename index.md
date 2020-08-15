@@ -66,9 +66,11 @@ class li extends PlutoComponent {
 }
 
 
-var ulcontainer = {
+var result = Pluto.div,
+    ulcontainer = {
         component: ul,
         props: {
+            result: result,
             name: "ul",
             data: [{
                 "key": "li 1"
@@ -76,8 +78,7 @@ var ulcontainer = {
                 "key": "li 2"
             }]
         }
-    },
-    result = Pluto.div;
+    };
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("addData").on("click", () => {
