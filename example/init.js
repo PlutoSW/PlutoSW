@@ -10,9 +10,9 @@ var result = Pluto.code,
             name: "ul",
             result: result,
             data: [{
-                "key": "li 1"
+                "key": "li 1 (Click for edit)"
             }, {
-                "key": "li 2"
+                "key": "li 2 (Click for edit)"
             }]
         }
     };
