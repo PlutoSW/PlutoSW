@@ -35,6 +35,7 @@ export default class PlutoComponent {
         }
         return false;
     }
+
     set data(data) {
         var dataDiff;
         if (Array.isArray(this.dataDefault) || Array.isArray(data)) {
