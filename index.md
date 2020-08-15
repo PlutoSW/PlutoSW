@@ -4,7 +4,7 @@
 ### Example
 <div id="root"></div>
 <script type="module">
-    import {Pluto,PlutoComponent} from 'PlutoSW.js';
+    import {Pluto,PlutoComponent} from './PlutoSW.js';
 
     class ul extends PlutoComponent {
     constructor(props) {
