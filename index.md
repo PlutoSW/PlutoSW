@@ -4,6 +4,8 @@
 ### Example
 <div id="root"></div>
 <script type="module">
+    import {Pluto,PlutoComponent} from 'PlutoSW.js';
+
     class ul extends PlutoComponent {
     constructor(props) {
         super(props.name, props.data);
