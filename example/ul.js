@@ -9,6 +9,9 @@ class ul extends PlutoComponent {
         super(data.name);
         this.data = data.data;
     }
+    onDataPush(){
+        
+    }
     render() {
         var elem = [];
         for (const data of this.data) {
