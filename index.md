@@ -3,7 +3,7 @@
 
 ### Example
 
-```markdown
+```javascript
 class ul extends PlutoComponent {
     constructor(props) {
         super(props.name, props.data);
