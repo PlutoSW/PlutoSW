@@ -1,7 +1,7 @@
 import {
     Pluto,
     PlutoComponent
-} from './PlutoSW.js';
+} from '../PlutoSW.js';
 import li from './li.js';
 
 class ul extends PlutoComponent {

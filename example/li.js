@@ -1,7 +1,7 @@
 import {
     Pluto,
     PlutoComponent
-} from './PlutoSW.js';
+} from '../PlutoSW.js';
 export default class li extends PlutoComponent {
     constructor(data) {
         super(data);
