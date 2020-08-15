@@ -93,12 +93,18 @@ Pluto.query(document.getElementById("root")).render(
 )
 </script>
 ```javascript
+import {Pluto,PlutoComponent} from './PlutoSW.js';
 class ul extends PlutoComponent {
     constructor(props) {
         super(props.name, props.data);
+        this.props = props;
     }
     onDataPush() {
         this.render(this.element, this.dataDiff);
+    }
+    onMount(){
+        console.log(this.data);
+        this.props.result.text(JSON.stringify(PlutoComponents.ul.data));
     }
     render(target = Pluto.ul, data = this.data) {
         var elem = [];
@@ -132,9 +138,11 @@ class li extends PlutoComponent {
 }
 
 
-var ulcontainer = {
+var result = Pluto.div,
+    ulcontainer = {
         component: ul,
         props: {
+            result: result,
             name: "ul",
             data: [{
                 "key": "li 1"
@@ -142,8 +150,7 @@ var ulcontainer = {
                 "key": "li 2"
             }]
         }
-    },
-    result = Pluto.div;
+    };
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("addData").on("click", () => {
