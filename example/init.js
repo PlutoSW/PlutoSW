@@ -3,19 +3,20 @@ import {
     ul
 } from './ul.js';
 
-var ulcontainer = {
+var result = Pluto.code,
+    ulcontainer = {
         component: ul,
         props: {
             name: "ul",
+            result: result,
             data: [{
                 "key": "li 1"
             }, {
                 "key": "li 2"
             }]
         }
-    },
-    result = Pluto.div;
-Pluto.query(document.body).render(
+    };
+Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("ekle").on("click", () => {
         PlutoComponents.ul.pushData({
