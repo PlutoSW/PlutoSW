@@ -12,18 +12,17 @@ class ul extends PlutoComponent {
     onDataPush() {
         this.render(this.element, this.dataDiff);
     }
-    onMount(){
-        console.log(this.data);
+    onMount() {
         this.props.result.text(JSON.stringify(PlutoComponents.ul.data));
     }
     render(target = Pluto.ul, data = this.data) {
         var elem = [];
-        for (const d of data) {
+        data.forEach(function (d) {
             elem.push({
                 component: li,
                 props: d
             });
-        }
+        })
         return target.child(...elem);
     }
 }
