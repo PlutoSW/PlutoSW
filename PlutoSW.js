@@ -1,4 +1,4 @@
-export default class PlutoComponent {
+class PlutoComponent {
     constructor(name, data) {
         this.element = null;
         if (typeof name !== "object") {
