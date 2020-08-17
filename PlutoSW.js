@@ -159,9 +159,6 @@ class PlutoElement {
         }
         return this;
     }
-    /**
-     * @param {PlutoElement|[]} elements Example: {innerText:"Example",href:"localhost"}
-     */
     beforeRender(elements) {
         var tempElem = [];
         elements.forEach(elem => {
@@ -175,6 +172,9 @@ class PlutoElement {
         })
         return tempElem;
     }
+    /**
+     * @param {PlutoElement|[]|PlutoComponent} elements Example: (component, Pluto.div)
+     */
     child(...elements) {
         elements = this.beforeRender(elements).map(x => x.element);
         try {
@@ -184,10 +184,16 @@ class PlutoElement {
         }
         return this;
     }
+    /**
+     * @description Prevents container element from emptying before creating. Used before .render()
+     */
     noClear() {
         this.noClearChilds = true;
         return this;
     }
+    /**
+     * @param {PlutoElement|[]|PlutoComponent} elements Example: (component, Pluto.div)
+     */
     render(...elements) {
         if (!this.noClearChilds) {
             this.element.innerHTML = '';
@@ -196,16 +202,17 @@ class PlutoElement {
         this.child(...elements);
         return this;
     }
+    /**
+     * @param {string} text
+     * @returns {PlutoElement||innerText}
+     * @description Returns the innerText value of the element if the parameter is not defined
+     */
     text(text) {
         if (text) {
             this.element.innerText = text;
         } else {
             return this.element.innerText;
         }
-        return this;
-    }
-    focus() {
-        this.element.focus();
         return this;
     }
     focus() {
@@ -228,6 +235,11 @@ class PlutoElement {
         }
         return this;
     }
+    /**
+     * @param {string} text
+     * @returns {PlutoElement||innerHTML}
+     * @description Returns the innerHTML value of the element if the parameter is not defined
+     */
     html(html) {
         if (html) {
             this.element.innerHTML = html;
@@ -237,7 +249,7 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {object||string} props Example: {innerText:"Example",href:"localhost"} or ("innerText","Example")
+     * @param {object||string} props Example: {id:"Example",project:"localhost"} or ("id","Example")
      */
     data(...props) {
         if (!props.length) {
