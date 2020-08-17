@@ -11,9 +11,10 @@ class ul extends PlutoComponent {
     }
     onDataPush() {
         this.render(this.element, this.dataDiff);
+        localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
     onMount() {
-        this.props.result.text(JSON.stringify(PlutoComponents.ul.data));
+        this.props.result.html(JSON.highlight(PlutoComponents.ul.data));
     }
     render(target = Pluto.ul, data = this.data) {
         var elem = [];

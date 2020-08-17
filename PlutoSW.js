@@ -4,8 +4,32 @@ const Pluto = {
     query: (query) => {
         var query = (typeof query === "string") ? document.querySelector(query) : (query.nodeType && query.nodeType === Node.ELEMENT_NODE) ? query : (query instanceof Pluto) ? query.element : null;
         return new PlutoElement(query);
+    },
+    jsonHighlight: (json) => {
+        json = Pluto.jsonPretty(json).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            var style = 'color:darkorange;';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    style = 'color:red;';
+                } else {
+                    style = 'color:green;';
+                }
+            } else if (/true|false/.test(match)) {
+                style = 'color:blue;';
+            } else if (/null/.test(match)) {
+                style = 'color:magenta;';
+            }
+            return '<span style="' + style + '">' + match + '</span>';
+        });
+    },
+    jsonPretty: (json) => {
+        return JSON.stringify(json, undefined, 4);
     }
 }
+JSON.highlight = Pluto.jsonHighlight;
+JSON.pretty = Pluto.jsonPretty;
+
 window.PlutoSupportedTags.forEach(e => {
     Object.defineProperty(Pluto, e, {
         get() {
