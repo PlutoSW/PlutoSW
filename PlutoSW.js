@@ -153,7 +153,9 @@ class PlutoElement {
         this.element = temp;
     }
     /**
-     * @param {object||string} props Example: {innerText:"Example",href:"localhost"} or ("innerText","Example")
+     * @param {object} props Example: {innerText:"Example",href:"localhost"}
+     * @param {string} props Example: ("innerText","Example")
+     * @returns {PlutoElement}
      */
     props(...props) {
         if (typeof props[0] === "string") {
@@ -177,7 +179,8 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {object||string} attrs Example: {href:"Example",src:"localhost"} or ("href","Example")
+     * @param {object} props Example: {title:"Example",href:"localhost"}
+     * @param {string} props Example: ("title","Example")
      */
     attr(...attrs) {
         if (typeof attrs[0] === "string") {
@@ -233,7 +236,8 @@ class PlutoElement {
         return false;
     }
     /**
-     * @param {object||string} css Example: {color:"red",fontWeight:"bold"} or ("color","red") or get style ("color")
+     * @param {object} css Example: {color:"red",fontWeight:"bold"}
+     * @param {object} css Example: ("color","red") or get style ("color")
      */
     style(...css) {
         if (typeof css[0] === "string") {
@@ -264,7 +268,9 @@ class PlutoElement {
         return tempElem;
     }
     /**
-     * @param {PlutoElement|[]|PlutoComponent} elements Example: (component, Pluto.div)
+     * @param {PlutoElement} elements Example: (Pluto.div)
+     * @param {PlutoComponent} elements Example: ({props:{name:"CompName",data:[1,2,3]}},component)
+     * @returns {PlutoElement} Parent Element
      */
     child(...elements) {
         elements = this.beforeRender(elements).map(x => x.element);
@@ -283,7 +289,9 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {PlutoElement|[]|PlutoComponent} elements Example: (component, Pluto.div)
+     * @param {PlutoElement} elements Example: (Pluto.div)
+     * @param {PlutoComponent} elements Example: ({props:{name:"CompName",data:[1,2,3]}},component)
+     * @returns {PlutoElement} Container Element
      */
     render(...elements) {
         if (!this.noClearChilds) {
@@ -295,7 +303,8 @@ class PlutoElement {
     }
     /**
      * @param {string} text
-     * @returns {PlutoElement||innerText}
+     * @returns {PlutoElement}
+     * @returns {innerText}
      * @description Returns the innerText value of the element if the parameter is not defined
      */
     text(text) {
@@ -328,7 +337,8 @@ class PlutoElement {
     }
     /**
      * @param {string} text
-     * @returns {PlutoElement||innerHTML}
+     * @returns {PlutoElement}
+     * @returns {innerHTML}
      * @description Returns the innerHTML value of the element if the parameter is not defined
      */
     html(html) {
@@ -340,7 +350,8 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {object||string} props Example: {id:"Example",project:"localhost"} or ("id","Example")
+     * @param {object} props Example: {id:"Example",project:"localhost"}
+     *  @param {string} props Example: ("id","Example")
      */
     data(...props) {
         if (!props.length) {
