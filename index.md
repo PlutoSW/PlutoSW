@@ -4,24 +4,46 @@
 ### Example
 <style>
 div#root {
-     padding: 15px;
-    border: 1px solid;
-    margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid;
+  margin-bottom: 30px;
+  text-align: center;
 }
-div#root code {
-    display: block;
-    padding: 5px;
-    color: black;
-    background: aliceblue;
+
+li {
+  list-style: none;
+  text-align: left;
+  margin: 8px 5px;
+  border: 1px solid lightgray;
+  padding: 10px;
 }
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+div#root pre {
+  text-align: left;
+  display: block;
+  padding: 5px;
+  color: black;
+  background: aliceblue;
+}
+
 div#root button {
-    margin-bottom: 9px;
-    margin-right: 8px;
-}   
+  margin: 9px 2px 19px 0px;
+  height: 40px;
+  width: 80px;
+  background: green;
+  border: 1px solid #000000;
+  color: #fff;
+}
 </style>
 <div id="root"></div>
 <script type="module">
 import {Pluto,PlutoComponent} from './PlutoSW.js';
+
 class ul extends PlutoComponent {
     constructor(props) {
         super(props.name, props.data);
@@ -29,19 +51,19 @@ class ul extends PlutoComponent {
     }
     onDataPush() {
         this.render(this.element, this.dataDiff);
+        localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
-    onMount(){
-        console.log(this.data);
-        this.props.result.text(JSON.stringify(PlutoComponents.ul.data));
+    onMount() {
+        this.props.result.html(JSON.highlight(PlutoComponents.ul.data));
     }
     render(target = Pluto.ul, data = this.data) {
         var elem = [];
-        for (const d of data) {
+        data.forEach(function (d) {
             elem.push({
                 component: li,
                 props: d
             });
-        }
+        })
         return target.child(...elem);
     }
 }
@@ -54,6 +76,9 @@ class li extends PlutoComponent {
         this.element.attr('contenteditable', 'true').focus();
         document.execCommand('selectAll', false, null);
     }
+    onDataChange(){
+        PlutoComponents.ul.props.result.html(JSON.highlight(PlutoComponents.ul.data));
+    }
     render() {
         return Pluto.li.props({
             innerText: this.data.key
@@ -61,18 +86,20 @@ class li extends PlutoComponent {
             this.data = {
                 key: this.element.text()
             }
+            localStorage.data = JSON.stringify(PlutoComponents.ul.data);
         });
     }
 }
 
 
-var result = Pluto.div,
+window.storeddata = (localStorage.data) ? JSON.parse(localStorage.data) : null;
+var result = Pluto.pre,
     ulcontainer = {
         component: ul,
         props: {
-            result: result,
             name: "ul",
-            data: [{
+            result: result,
+            data: storeddata || [{
                 "key": "li 1 (Click for edit)"
             }, {
                 "key": "li 2 (Click for edit)"
@@ -81,19 +108,20 @@ var result = Pluto.div,
     };
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
-    Pluto.button.text("addData").on("click", () => {
+    Pluto.button.text("ekle").on("click", () => {
         PlutoComponents.ul.pushData({
             "key": "li " + (PlutoComponents.ul.data.length + 1)
         });
     }),
-    Pluto.button.text("getData").on("click", () => {
-        result.text(JSON.stringify(PlutoComponents.ul.data));
+    Pluto.button.text("getir").on("click", () => {
+        result.html(JSON.highlight(PlutoComponents.ul.data));
     }),
     result
 )
 </script>
 ```javascript
 import {Pluto,PlutoComponent} from './PlutoSW.js';
+
 class ul extends PlutoComponent {
     constructor(props) {
         super(props.name, props.data);
@@ -101,19 +129,19 @@ class ul extends PlutoComponent {
     }
     onDataPush() {
         this.render(this.element, this.dataDiff);
+        localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
-    onMount(){
-        console.log(this.data);
-        this.props.result.text(JSON.stringify(PlutoComponents.ul.data));
+    onMount() {
+        this.props.result.html(JSON.highlight(PlutoComponents.ul.data));
     }
     render(target = Pluto.ul, data = this.data) {
         var elem = [];
-        for (const d of data) {
+        data.forEach(function (d) {
             elem.push({
                 component: li,
                 props: d
             });
-        }
+        })
         return target.child(...elem);
     }
 }
@@ -126,6 +154,9 @@ class li extends PlutoComponent {
         this.element.attr('contenteditable', 'true').focus();
         document.execCommand('selectAll', false, null);
     }
+    onDataChange(){
+        PlutoComponents.ul.props.result.html(JSON.highlight(PlutoComponents.ul.data));
+    }
     render() {
         return Pluto.li.props({
             innerText: this.data.key
@@ -133,18 +164,20 @@ class li extends PlutoComponent {
             this.data = {
                 key: this.element.text()
             }
+            localStorage.data = JSON.stringify(PlutoComponents.ul.data);
         });
     }
 }
 
 
-var result = Pluto.div,
+window.storeddata = (localStorage.data) ? JSON.parse(localStorage.data) : null;
+var result = Pluto.pre,
     ulcontainer = {
         component: ul,
         props: {
-            result: result,
             name: "ul",
-            data: [{
+            result: result,
+            data: storeddata || [{
                 "key": "li 1 (Click for edit)"
             }, {
                 "key": "li 2 (Click for edit)"
@@ -153,13 +186,13 @@ var result = Pluto.div,
     };
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
-    Pluto.button.text("addData").on("click", () => {
+    Pluto.button.text("ekle").on("click", () => {
         PlutoComponents.ul.pushData({
             "key": "li " + (PlutoComponents.ul.data.length + 1)
         });
     }),
-    Pluto.button.text("getData").on("click", () => {
-        result.text(JSON.stringify(PlutoComponents.ul.data));
+    Pluto.button.text("getir").on("click", () => {
+        result.html(JSON.highlight(PlutoComponents.ul.data));
     }),
     result
 )
