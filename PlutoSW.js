@@ -116,6 +116,11 @@ const Pluto = {
     },
     jsonPretty: (json) => {
         return JSON.stringify(json, undefined, 4);
+    },
+    assign: (name) => {
+        window.PlutoSupportedTags.push(name);
+        Pluto[name] = new PlutoElement(name);
+        return
     }
 }
 JSON.highlight = Pluto.jsonHighlight;
