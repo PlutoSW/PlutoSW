@@ -121,6 +121,9 @@ const Pluto = {
         window.PlutoSupportedTags.push(name);
         Pluto[name] = new PlutoElement(name);
         return Pluto[name];
+    },
+    implement: (name, props) => {
+        return Pluto[name].props(props);
     }
 }
 JSON.highlight = Pluto.jsonHighlight;
