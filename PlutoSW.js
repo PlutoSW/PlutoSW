@@ -120,7 +120,7 @@ const Pluto = {
     assign: (name) => {
         window.PlutoSupportedTags.push(name);
         Pluto[name] = new PlutoElement(name);
-        return
+        return Pluto[name];
     }
 }
 JSON.highlight = Pluto.jsonHighlight;
