@@ -299,6 +299,20 @@ class PlutoElement {
         return this;
     }
     /**
+     * @param {PlutoElement} elements Example: (Pluto.div)
+     * @param {PlutoComponent} elements Example: ({props:{name:"CompName",data:[1,2,3]}},component)
+     * @returns {PlutoElement} Parent Element
+     */
+    prepend(...elements) {
+        elements = this.beforeRender(elements).map(x => x.element);
+        try {
+            this.element.prepend(...elements);
+        } catch (error) {
+            console.error(error)
+        }
+        return this;
+    }
+    /**
      * @description Prevents container element from emptying before creating. Used before .render()
      */
     noClear() {
