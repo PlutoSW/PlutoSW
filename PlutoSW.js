@@ -414,7 +414,11 @@ class PlutoElement {
         return this;
     }
     on(ev, fn) {
-        this.element.addEventListener(ev, fn.bind(event, this));
+        if (fn) {
+            this.element.addEventListener(ev, fn.bind(event, this));
+        } else {
+            this.element[ev]();
+        }
         return this;
     }
     toString() {
