@@ -195,7 +195,7 @@ class PlutoElement {
      * @param {...name} attrs Example: ("src","href"...)
      */
     removeAttr(...attrs) {
-        if (name) {
+        if (attrs) {
             this.element.removeAttribute(...attrs);
             return this;
         }
