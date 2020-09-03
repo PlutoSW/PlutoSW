@@ -248,6 +248,10 @@ class PlutoElement {
         }
         return false;
     }
+    remove() {
+        this.element.remove();
+        return this;
+    }
     /**
      * @param {object} css Example: {color:"red",fontWeight:"bold"}
      * @param {object} css Example: ("color","red") or get style ("color")
