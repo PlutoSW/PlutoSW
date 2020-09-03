@@ -192,8 +192,17 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {object} props Example: {title:"Example",href:"localhost"}
-     * @param {string} props Example: ("title","Example")
+     * @param {...name} attrs Example: ("src","href"...)
+     */
+    removeAttr(...attrs) {
+        if (attrs) {
+            this.element.removeAttribute(...attrs);
+            return this;
+        }
+    }
+    /**
+     * @param {object} attrs Example: {title:"Example",href:"localhost"}
+     * @param {string} attrs Example: ("title","Example")
      */
     attr(...attrs) {
         if (typeof attrs[0] === "string") {
@@ -220,7 +229,7 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {...name} attrs Example: ("class1","class2"...)
+     * @param {...name} name Example: ("class1","class2"...)
      */
     class(...name) {
         if (name) {
@@ -231,7 +240,7 @@ class PlutoElement {
         }
     }
     /**
-     * @param {...name} attrs Example: ("class1","class2"...)
+     * @param {...name} name Example: ("class1","class2"...)
      */
     removeClass(...name) {
         if (name) {
@@ -240,7 +249,7 @@ class PlutoElement {
         }
     }
     /**
-     * @param {...name} attrs Example: "class1"
+     * @param {...name} name Example: "class1"
      */
     hasClass(name) {
         if (name) {
@@ -299,6 +308,20 @@ class PlutoElement {
         return this;
     }
     /**
+     * @param {PlutoElement} elements Example: (Pluto.div)
+     * @param {PlutoComponent} elements Example: ({props:{name:"CompName",data:[1,2,3]}},component)
+     * @returns {PlutoElement} Parent Element
+     */
+    prepend(...elements) {
+        elements = this.beforeRender(elements).map(x => x.element);
+        try {
+            this.element.prepend(...elements);
+        } catch (error) {
+            console.error(error)
+        }
+        return this;
+    }
+    /**
      * @description Prevents container element from emptying before creating. Used before .render()
      */
     noClear() {
@@ -318,7 +341,6 @@ class PlutoElement {
         this.child(...elements);
         return this;
     }
-
     renderTo(selector) {
         var parent = Pluto.query(selector);
         if (!this.noClearChilds) {
@@ -339,6 +361,14 @@ class PlutoElement {
             this.element.innerText = text;
         } else {
             return this.element.innerText;
+        }
+        return this;
+    }
+    value(text) {
+        if (text) {
+            this.element.value = text;
+        } else {
+            return this.element.value;
         }
         return this;
     }
