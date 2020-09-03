@@ -355,6 +355,14 @@ class PlutoElement {
         }
         return this;
     }
+    value(text) {
+        if (text) {
+            this.element.value = text;
+        } else {
+            return this.element.value;
+        }
+        return this;
+    }
     show() {
         this.element.style.display = 'block';
         return this;
