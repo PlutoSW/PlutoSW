@@ -328,6 +328,14 @@ class PlutoElement {
         }
         return this;
     }
+    show() {
+        this.element.style.display = 'block';
+        return this;
+    }
+    hide() {
+        this.element.style.display = 'none';
+        return this;
+    }
     focus() {
         this.element.focus();
         return this;
