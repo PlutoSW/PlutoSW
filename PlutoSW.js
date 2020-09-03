@@ -196,7 +196,7 @@ class PlutoElement {
      */
     removeAttr(...attrs) {
         if (name) {
-            this.element.removeAttribute(...name);
+            this.element.removeAttribute(...attrs);
             return this;
         }
     }
