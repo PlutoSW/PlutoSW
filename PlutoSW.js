@@ -192,8 +192,17 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {object} props Example: {title:"Example",href:"localhost"}
-     * @param {string} props Example: ("title","Example")
+     * @param {...name} attrs Example: ("src","href"...)
+     */
+    removeAttr(...attrs) {
+        if (name) {
+            this.element.removeAttribute(...name);
+            return this;
+        }
+    }
+    /**
+     * @param {object} attrs Example: {title:"Example",href:"localhost"}
+     * @param {string} attrs Example: ("title","Example")
      */
     attr(...attrs) {
         if (typeof attrs[0] === "string") {
@@ -220,7 +229,7 @@ class PlutoElement {
         return this;
     }
     /**
-     * @param {...name} attrs Example: ("class1","class2"...)
+     * @param {...name} name Example: ("class1","class2"...)
      */
     class(...name) {
         if (name) {
@@ -231,7 +240,7 @@ class PlutoElement {
         }
     }
     /**
-     * @param {...name} attrs Example: ("class1","class2"...)
+     * @param {...name} name Example: ("class1","class2"...)
      */
     removeClass(...name) {
         if (name) {
@@ -240,7 +249,7 @@ class PlutoElement {
         }
     }
     /**
-     * @param {...name} attrs Example: "class1"
+     * @param {...name} name Example: "class1"
      */
     hasClass(name) {
         if (name) {
