@@ -314,6 +314,15 @@ class PlutoElement {
         this.child(...elements);
         return this;
     }
+    renderTo(selector) {
+        var parent = Pluto.query(selector);
+        if (!this.noClearChilds) {
+            parent.element.innerHTML = '';
+            this.noClearChilds = false;
+        }
+        parent.child(this);
+        return this;
+    }
     /**
      * @param {string} text
      * @returns {PlutoElement}
