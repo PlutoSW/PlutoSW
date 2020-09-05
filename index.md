@@ -49,7 +49,7 @@ class ul extends PlutoComponent {
         super(props.name, props.data);
         this.props = props;
     }
-    onDataPush() {
+    onDataChange() {
         this.render(this.element, this.dataDiff);
         localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
@@ -110,7 +110,7 @@ var result = Pluto.pre,
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("ekle").on("click", () => {
-        PlutoComponents.ul.pushData({
+        PlutoComponents.ul.data.push({
             "key": "li " + (PlutoComponents.ul.data.length + 1)
         });
     }),
