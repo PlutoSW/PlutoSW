@@ -357,7 +357,7 @@ class PlutoElement {
      * @description Returns the innerText value of the element if the parameter is not defined
      */
     text(text) {
-        if (text) {
+        if (text !== null) {
             this.element.innerText = text;
         } else {
             return this.element.innerText;
@@ -365,7 +365,7 @@ class PlutoElement {
         return this;
     }
     value(text) {
-        if (text) {
+        if (text !== null) {
             this.element.value = text;
         } else {
             return this.element.value;
