@@ -407,7 +407,7 @@ class PlutoElement {
      * @description Returns the innerHTML value of the element if the parameter is not defined
      */
     html(html) {
-        if (html) {
+        if (html !== null) {
             this.element.innerHTML = html;
         } else {
             return this.element.innerHTML;

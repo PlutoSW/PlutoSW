@@ -83,6 +83,7 @@ class li extends PlutoComponent {
         return Pluto.li.props({
             innerText: this.data.key
         }).on("click", () => this.click()).on("blur", () => {
+            console.log(this.element.text());
             this.data = {
                 key: this.element.text()
             }
