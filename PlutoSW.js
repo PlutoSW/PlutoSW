@@ -1,13 +1,101 @@
 class PlutoComponent {
     constructor(name, data) {
+        const arrayChangeMethod = ['push', 'pop', 'unshift', 'shift', 'splice', 'sort', 'reverse'];
+        const {
+            getOwnPropertyNames,
+            getOwnPropertySymbols,
+            defineProperty,
+            getOwnPropertyDescriptor
+        } = Object;
+
+        function isObject(obj) {
+            return typeof obj === 'object';
+        }
+
+        function isArray(arr) {
+            return Array.isArray(arr);
+        }
+
+        function isFunction(fn) {
+            return typeof fn === 'function';
+        }
+        const getOwnKeys = isFunction(getOwnPropertySymbols) ?
+            function (obj) {
+                return getOwnPropertyNames(obj).concat(getOwnPropertySymbols(obj));
+            } :
+            getOwnPropertyNames;
+
+        function deepObserve(obj, hook) {
+            const mapStore = {};
+            let arrayChanging = false;
+
+            function wrapProperty(key) {
+                let value = obj[key];
+                const desc = getOwnPropertyDescriptor(obj, key);
+                if (desc && desc.configurable === false) return;
+                defineProperty(obj, key, {
+                    get() {
+                        if (mapStore[key]) return value;
+                        if (isObject(value) || isArray(value)) {
+                            deepObserve(value, hook);
+                        }
+                        mapStore[key] = true;
+                        return value;
+                    },
+                    set(val) {
+                        if (isObject(val) || isArray(val)) deepObserve(val, hook);
+                        mapStore[key] = true;
+                        if (!arrayChanging) hook(obj);
+                        return val;
+                    },
+                    enumerable: desc.enumerable,
+                    configurable: true
+                });
+            }
+            if (isObject(obj) || isArray(obj)) {
+                getOwnKeys(obj).forEach(key => wrapProperty(key));
+            }
+            if (isArray(obj)) {
+                arrayChangeMethod.forEach(key => {
+                    const originFn = obj[key];
+                    defineProperty(obj, key, {
+                        value(...args) {
+                            const originLength = obj.length;
+                            arrayChanging = true;
+                            originFn.bind(obj)(...args);
+                            arrayChanging = false;
+                            if (obj.length > originLength) {
+                                const keys = new Array(obj.length - originLength)
+                                    .fill(1)
+                                    .map((value, index) => (index + originLength).toString());
+                                keys.forEach(key => wrapProperty(key));
+                            }
+                            hook(obj);
+                        },
+                        enumerable: false,
+                        configurable: true,
+                        writable: true
+                    })
+                })
+            }
+            return obj;
+        }
         this.element = null;
         if (typeof name !== "object") {
             window.PlutoComponents = (window.PlutoComponents) ? window.PlutoComponents : {};
             window.PlutoComponents[name] = this;
-            this.name = name;
-            this.dataDefault = data;
+
+            this.data = deepObserve(data, (newdata) => {
+                var dataDiff = this.calcDiff(data, newdata);
+                this.dataDiff = Object.values(dataDiff);
+                this.onDataChange();
+            });
         } else {
-            this.dataDefault = name;
+            this.data = deepObserve(name, (newdata) => {
+                var dataDiff = this.calcDiff(data, newdata);
+                this.dataDiff = Object.values(dataDiff);
+                this.onDataChange();
+            });
         }
         this.onCreate();
     }
@@ -17,15 +105,21 @@ class PlutoComponent {
         for (k in o1) {
             if (!o1.hasOwnProperty(k)) {} else if (typeof o1[k] != 'object' || typeof o2[k] != 'object') {
                 if (!(k in o2) || o1[k] !== o2[k]) {
-                    diff[k] = o2[k];
+                    if (typeof o2[k] !== "undefined") {
+                        diff[k] = o2[k];
+                    }
                 }
             } else if (kDiff = this.calcDiff(o1[k], o2[k])) {
-                diff[k] = kDiff;
+                if (typeof kDiff !== "undefined") {
+                    diff[k] = kDiff;
+                }
             }
         }
         for (k in o2) {
             if (o2.hasOwnProperty(k) && !(k in o1)) {
-                diff[k] = o2[k];
+                if (typeof o2[k] !== "undefined") {
+                    diff[k] = o2[k];
+                }
             }
         }
         for (k in diff) {
@@ -36,41 +130,6 @@ class PlutoComponent {
         return false;
     }
 
-    set data(data) {
-        var dataDiff;
-        if (Array.isArray(this.dataDefault) || Array.isArray(data)) {
-            dataDiff = this.calcDiff(this.dataDefault, data);
-            this.dataDefault = data;
-        } else {
-            dataDiff = this.calcDiff(this.dataDefault, data);
-            this.dataDefault = Object.assign(this.dataDefault, data);
-        }
-        if (this.mounted && dataDiff) {
-            this.dataDiff = Object.values(dataDiff);
-            this.onDataChange();
-        }
-        return this;
-    }
-
-    pushData(data) {
-        if (!Array.isArray(this.dataDefault)) {
-            return;
-        }
-        var oldData = [...this.dataDefault];
-        this.dataDefault.push(data);
-        var dataDiff = this.calcDiff(oldData, this.dataDefault);
-        if (this.mounted && dataDiff) {
-            this.dataDiff = Object.values(dataDiff);
-            this.onDataPush();
-        }
-        return this;
-    }
-    get data() {
-        return this.dataDefault;
-    }
-    onDataPush() {
-
-    }
     onDataChange() {
         this.element.replace(this._render().element)
     }
