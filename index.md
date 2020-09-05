@@ -50,6 +50,8 @@ class ul extends PlutoComponent {
         this.props = props;
     }
     onDataChange() {
+        console.log(this.data);
+            console.log(this.dataDiff);
         this.render(this.element, this.dataDiff);
         localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
@@ -77,16 +79,15 @@ class li extends PlutoComponent {
         document.execCommand('selectAll', false, null);
     }
     onDataChange(){
+        console.log(this.data);
+            console.log(this.dataDiff);
         PlutoComponents.ul.props.result.html(JSON.highlight(PlutoComponents.ul.data));
     }
     render() {
         return Pluto.li.props({
             innerText: this.data.key
         }).on("click", () => this.click()).on("blur", () => {
-            console.log(this.element.text());
-            this.data = {
-                key: this.element.text()
-            }
+            this.data.key = this.element.text()
             localStorage.data = JSON.stringify(PlutoComponents.ul.data);
         });
     }
@@ -120,84 +121,3 @@ Pluto.query(document.getElementById("root")).render(
     result
 )
 </script>
-```javascript
-import {Pluto,PlutoComponent} from './PlutoSW.js';
-
-class ul extends PlutoComponent {
-    constructor(props) {
-        super(props.name, props.data);
-        this.props = props;
-    }
-    onDataChange() {
-           console.log(this.data);
-            console.log(this.dataDiff);
-        this.render(this.element, this.dataDiff);
-        localStorage.data = JSON.stringify(PlutoComponents.ul.data);
-    }
-    onMount() {
-        this.props.result.html(JSON.highlight(PlutoComponents.ul.data));
-    }
-    render(target = Pluto.ul, data = this.data) {
-        var elem = [];
-        data.forEach(function (d) {
-            elem.push({
-                component: li,
-                props: d
-            });
-        })
-        return target.child(...elem);
-    }
-}
-class li extends PlutoComponent {
-    constructor(data) {
-        super(data);
-        this.in = 0;
-    }
-    click() {
-        this.element.attr('contenteditable', 'true').focus();
-        document.execCommand('selectAll', false, null);
-    }
-    onDataChange(){
-        console.log(this.data);
-                console.log(this.dataDiff);
-
-        PlutoComponents.ul.props.result.html(JSON.highlight(PlutoComponents.ul.data));
-    }
-    render() {
-        return Pluto.li.props({
-            innerText: this.data.key
-        }).on("click", () => this.click()).on("blur", () => {
-            this.data.key= this.element.text();
-            localStorage.data = JSON.stringify(PlutoComponents.ul.data);
-        });
-    }
-}
-
-
-window.storeddata = (localStorage.data) ? JSON.parse(localStorage.data) : null;
-var result = Pluto.pre,
-    ulcontainer = {
-        component: ul,
-        props: {
-            name: "ul",
-            result: result,
-            data: storeddata || [{
-                "key": "li 1 (Click for edit)"
-            }, {
-                "key": "li 2 (Click for edit)"
-            }]
-        }
-    };
-Pluto.query(document.getElementById("root")).render(
-    ulcontainer,
-    Pluto.button.text("ekle").on("click", () => {
-        PlutoComponents.ul.data.push({
-            "key": "li " + (PlutoComponents.ul.data.length + 1)
-        });
-    }),
-    Pluto.button.text("getir").on("click", () => {
-        result.html(JSON.highlight(PlutoComponents.ul.data));
-    }),
-    result
-)
-```
