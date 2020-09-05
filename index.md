@@ -129,6 +129,8 @@ class ul extends PlutoComponent {
         this.props = props;
     }
     onDataChange() {
+           console.log(this.data);
+                console.log(this.dataDiff);
         this.render(this.element, this.dataDiff);
         localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
@@ -156,6 +158,9 @@ class li extends PlutoComponent {
         document.execCommand('selectAll', false, null);
     }
     onDataChange(){
+        console.log(this.data);
+                console.log(this.dataDiff);
+
         PlutoComponents.ul.props.result.html(JSON.highlight(PlutoComponents.ul.data));
     }
     render() {
