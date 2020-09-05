@@ -357,7 +357,7 @@ class PlutoElement {
      * @description Returns the innerText value of the element if the parameter is not defined
      */
     text(text) {
-        if (text !== null) {
+        if (typeof text !== "undefined") {
             this.element.innerText = text;
         } else {
             return this.element.innerText;
@@ -365,7 +365,7 @@ class PlutoElement {
         return this;
     }
     value(text) {
-        if (text !== null) {
+        if (typeof text !== "undefined") {
             this.element.value = text;
         } else {
             return this.element.value;
@@ -407,7 +407,7 @@ class PlutoElement {
      * @description Returns the innerHTML value of the element if the parameter is not defined
      */
     html(html) {
-        if (html !== null) {
+        if (typeof html !== "undefined") {
             this.element.innerHTML = html;
         } else {
             return this.element.innerHTML;
