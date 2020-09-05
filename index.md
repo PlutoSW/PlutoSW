@@ -188,7 +188,7 @@ var result = Pluto.pre,
 Pluto.query(document.getElementById("root")).render(
     ulcontainer,
     Pluto.button.text("ekle").on("click", () => {
-        PlutoComponents.ul.pushData({
+        PlutoComponents.ul.data.push({
             "key": "li " + (PlutoComponents.ul.data.length + 1)
         });
     }),
