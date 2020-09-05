@@ -130,7 +130,7 @@ class ul extends PlutoComponent {
     }
     onDataChange() {
            console.log(this.data);
-                console.log(this.dataDiff);
+            console.log(this.dataDiff);
         this.render(this.element, this.dataDiff);
         localStorage.data = JSON.stringify(PlutoComponents.ul.data);
     }
