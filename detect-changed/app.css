@@ -1,0 +1,17 @@
+body {
+    background-color: darkgrey;
+    text-align: center !important;
+    font-size: 30px;
+}
+
+.area {
+    padding: 20px;
+}
+
+.log {
+    width: 60%;
+    height: 100px;
+    text-align: center;
+    padding: 20px;
+    margin: 20px;
+}
