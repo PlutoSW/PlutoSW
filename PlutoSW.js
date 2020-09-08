@@ -513,6 +513,20 @@ class PlutoElement {
     toString() {
         return this.element.outerHTML;
     }
+    change(func, config = {
+        attributes: true,
+        childList: true,
+        characterData: true
+    }) {
+        var observer = new MutationObserver((mutation) => {
+            var newContent = mutation[0]['addedNodes'][0]['data'];
+            var oldContent = mutation[0]['removedNodes'][0]['data'];
+            func(oldContent, newContent);
+        });
+          observer.disconnect();
+          observer.observe(this.element, config);
+          return this;
+    }
 }
 export {
     Pluto,
