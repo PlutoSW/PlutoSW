@@ -1,4 +1,3 @@
-window.PlutoComponents = [];
 class PlutoComponent {
     constructor(name, data) {
         const arrayChangeMethod = ['push', 'pop', 'unshift', 'shift', 'splice', 'sort', 'reverse'];
@@ -44,7 +43,7 @@ class PlutoComponent {
                         return value;
                     },
                     set(val) {
-                        if (val instanceof PlutoElement === false && (isObject(val) || isArray(val))) deepObserve(val, hook);
+                        if (isObject(val) || isArray(val)) deepObserve(val, hook);
                         mapStore[key] = true;
                         if (!arrayChanging) hook(obj);
                         return val;
@@ -83,18 +82,19 @@ class PlutoComponent {
         }
         this.element = null;
         if (typeof name !== "object") {
+            window.PlutoComponents = (window.PlutoComponents) ? window.PlutoComponents : {};
             window.PlutoComponents[name] = this;
+
             this.data = deepObserve(data, (newdata) => {
-                var dataDiff = this.calcDiff(newdata, data);
+                var dataDiff = this.calcDiff(data, newdata);
                 this.dataDiff = Object.values(dataDiff);
                 this.onDataChange();
             });
         } else {
             this.data = deepObserve(name, (newdata) => {
-                var dataDiff = this.calcDiff(newdata, data);
+                var dataDiff = this.calcDiff(data, newdata);
                 this.dataDiff = Object.values(dataDiff);
                 this.onDataChange();
-
             });
         }
         this.onCreate();
@@ -141,17 +141,8 @@ class PlutoComponent {
     }
     _render() {
         this.element = this.render();
-        var observer = new MutationObserver((mutations, me) => {
-            if (this.mounted) {
-                this.onMount(this.element);
-                me.disconnect();
-                return;
-            }
-        });
-        observer.observe(document, {
-            childList: true,
-            subtree: true
-        });
+        this.mounted = true;
+        this.onMount();
         return this.element;
     }
     toString() {
@@ -193,9 +184,6 @@ const Pluto = {
     },
     implement: (name, props) => {
         PlutoImplements[name] = props;
-    },
-    extend: (name, fn) => {
-        PlutoElement.prototype[name] = fn;
     }
 }
 JSON.highlight = Pluto.jsonHighlight;
@@ -357,13 +345,8 @@ class PlutoElement {
             if (elem instanceof PlutoElement) {
                 tempElem.push(elem);
             } else {
-                if (elem.props && typeof elem.props !== "undefined" && PlutoComponents[elem.props.name]) {
-                    var component = PlutoComponents[elem.props.name];
-                } else {
-                    var component = new elem.component(elem.props);
-                    this.components.push(component);
-                }
-                component.mounted = true;
+                var component = new elem.component(elem.props);
+                this.components.push(component);
                 tempElem.push(component._render());
             }
         })
@@ -466,7 +449,6 @@ class PlutoElement {
     }
     replace(element) {
         this.element.replaceWith(element);
-        this.element = element;
         return this;
     }
     id(id) {
