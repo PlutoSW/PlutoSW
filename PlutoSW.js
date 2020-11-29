@@ -22,9 +22,37 @@ class PlutoComponent {
         }
         const getOwnKeys = isFunction(getOwnPropertySymbols) ?
             function (obj) {
+                if(obj === null){
+                    obj = {};
+                }
                 return getOwnPropertyNames(obj).concat(getOwnPropertySymbols(obj));
             } :
             getOwnPropertyNames;
+
+        function clone(obj) {
+            if (null == obj || "object" != typeof obj) return obj;
+            if (obj instanceof Date) {
+                var copy = new Date();
+                copy.setTime(obj.getTime());
+                return copy;
+            }
+            if (obj instanceof Array) {
+                var copy = [];
+                for (var i = 0, len = obj.length; i < len; i++) {
+                    copy[i] = clone(obj[i]);
+                }
+                return copy;
+            }
+            if (obj instanceof Object) {
+                var copy = {};
+                for (var attr in obj) {
+                    if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+                }
+                return copy;
+            }
+
+            throw new Error("Unable to copy obj! Its type isn't supported.");
+        }
 
         function deepObserve(obj, hook) {
             const mapStore = {};
@@ -46,6 +74,7 @@ class PlutoComponent {
                     set(val) {
                         if (val instanceof PlutoElement === false && (isObject(val) || isArray(val))) deepObserve(val, hook);
                         mapStore[key] = true;
+                        value = val;
                         if (!arrayChanging) hook(obj);
                         return val;
                     },
@@ -81,20 +110,24 @@ class PlutoComponent {
             }
             return obj;
         }
+
         this.element = null;
         if (typeof name !== "object") {
             window.PlutoComponents[name] = this;
+            this._data = clone(data);
             this.data = deepObserve(data, (newdata) => {
-                var dataDiff = this.calcDiff(newdata, data);
+                var dataDiff = this.calcDiff(this._data, newdata);
                 this.dataDiff = Object.values(dataDiff);
                 this.onDataChange();
+                this._data = clone(newdata);
             });
         } else {
+            this._data = clone(name);
             this.data = deepObserve(name, (newdata) => {
-                var dataDiff = this.calcDiff(newdata, data);
+                var dataDiff = this.calcDiff(this._data, newdata);
                 this.dataDiff = Object.values(dataDiff);
                 this.onDataChange();
-
+                this._data = clone(newdata);
             });
         }
         this.onCreate();
@@ -129,7 +162,10 @@ class PlutoComponent {
         }
         return false;
     }
-
+    setData(data) {
+        this.data = data;
+        this.onDataChange();
+    }
     onDataChange() {
         this.element.replace(this._render().element)
     }
@@ -186,10 +222,26 @@ const Pluto = {
     jsonPretty: (json) => {
         return JSON.stringify(json, undefined, 4);
     },
-    assign: (name) => {
+    text: (text) => {
+        return new PlutoElement(text);
+    },
+    assign: (name, global = false) => {
         window.PlutoSupportedTags.push(name);
-        Pluto[name] = new PlutoElement(name);
-        return Pluto[name];
+        if (!global) {
+            Pluto[name] = new PlutoElement(name);
+            return Pluto[name];
+        } else {
+            Object.defineProperty(Pluto, name, {
+                get() {
+                    if (PlutoImplements[name]) {
+                        var element = new PlutoElement(name);
+                        return element.props(PlutoImplements[name]);
+                    }
+                    return new PlutoElement(name);
+                }
+            });
+        }
+        return Pluto;
     },
     implement: (name, props) => {
         PlutoImplements[name] = props;
@@ -242,6 +294,7 @@ class PlutoElement {
      * @returns {PlutoElement}
      */
     props(...props) {
+        props = [...props.filter(Boolean)];
         if (typeof props[0] === "string") {
             if (props[1]) {
                 this.element[props[0]] = props[1];
@@ -276,6 +329,7 @@ class PlutoElement {
      * @param {string} attrs Example: ("title","Example")
      */
     attr(...attrs) {
+        attrs = [...attrs.filter(Boolean)];
         if (typeof attrs[0] === "string") {
             if (attrs[1]) {
                 this.element.setAttribute(attrs[0], attrs[1]);
@@ -304,10 +358,19 @@ class PlutoElement {
      */
     class(...name) {
         if (name) {
-            this.element.classList.add(...name);
+            this.element.classList.add(...name.filter(Boolean));
             return this;
         } else {
             return this.element.classList.toString();
+        }
+    }
+    /**
+     * @param {...name} name Example: ("class1","class2"...)
+     */
+    toggleClass(...name) {
+        if (name) {
+            this.element.classList.toggle(...name);
+            return this;
         }
     }
     /**
@@ -330,7 +393,7 @@ class PlutoElement {
     }
     remove() {
         this.element.remove();
-        return this;
+        return null;
     }
     /**
      * @param {object} css Example: {color:"red",fontWeight:"bold"}
@@ -354,17 +417,19 @@ class PlutoElement {
     beforeRender(elements) {
         var tempElem = [];
         elements.forEach(elem => {
-            if (elem instanceof PlutoElement) {
-                tempElem.push(elem);
-            } else {
-                if (elem.props && typeof elem.props !== "undefined" && PlutoComponents[elem.props.name]) {
-                    var component = PlutoComponents[elem.props.name];
+            if (elem) {
+                if (elem instanceof PlutoElement) {
+                    tempElem.push(elem);
                 } else {
-                    var component = new elem.component(elem.props);
-                    this.components.push(component);
+                    if (elem.props && typeof elem.props !== "undefined" && !elem.props.unique && PlutoComponents[elem.props.name]) {
+                        var component = PlutoComponents[elem.props.name];
+                    } else {
+                        var component = new elem.component(elem.props);
+                        this.components.push(component);
+                    }
+                    component.mounted = true;
+                    tempElem.push(component._render());
                 }
-                component.mounted = true;
-                tempElem.push(component._render());
             }
         })
         return tempElem;
@@ -499,6 +564,10 @@ class PlutoElement {
         if (!props.length) {
             return this.element.PlutoSW;
         }
+        if (props[0] === null) {
+            this.element.PlutoSW = {};
+            return this;
+        }
         if (typeof props[0] === "string") {
             if (props[1]) {
                 this.element.PlutoSW[props[0]] = props[1];
@@ -524,8 +593,13 @@ class PlutoElement {
         if (fn) {
             this.element.addEventListener(ev, fn.bind(event, this));
         } else {
-            this.element[ev]();
+            this.element.dispatchEvent(new Event(ev));
+
         }
+        return this;
+    }
+    trigger(event) {
+        this.element.dispatchEvent(new Event(event));
         return this;
     }
     toString() {
