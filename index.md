@@ -2,7 +2,7 @@
 
 
 ### Example
-<script type="module" src="init.js"></script>
+<script type="module" src="./init.js"></script>
 <style>
     div#root {
         padding: 15px;
