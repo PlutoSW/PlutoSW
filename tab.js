@@ -27,7 +27,7 @@ export default class tab extends PlutoComponent {
             this.dataTabs.push(
                 {
                     name: e,
-                    element: Pluto.li.text(e.camelCase().T()).class((this.selected === i) ? "selected" : "").on("click", () => {
+                    element: Pluto.li.text(e).class((this.selected === i) ? "selected" : "").on("click", () => {
                         this.go(i);
                     })
                 }
