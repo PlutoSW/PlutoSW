@@ -1,7 +1,7 @@
 import {
     Pluto
 } from '../PlutoSW.js';
-import Tab from 'tab.js';
+import Tab from './tab.js';
 
 var tab = new tab({
                 name: "ProfileTab",
