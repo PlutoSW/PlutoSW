@@ -45,7 +45,7 @@
 <div id="root"></div>
 
 ```html
-<script type="module" src="init.js"></script>
+<script type="module" src="./init.js"></script>
 <style>
     div#root {
         padding: 15px;
@@ -80,4 +80,6 @@
         color: #fff;
     }
 </style>
+<div id="root"></div>
+
 ```

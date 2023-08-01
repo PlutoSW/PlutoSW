@@ -1,6 +1,6 @@
 import {
     Pluto
-} from '../PlutoSW.js';
+} from './PlutoSW.js';
 import Tab from './tab.js';
 
 var tab = new tab({

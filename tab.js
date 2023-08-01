@@ -1,4 +1,4 @@
-import { Pluto, PlutoComponent } from "../PlutoSW.js";
+import { Pluto, PlutoComponent } from "./PlutoSW.js";
 export default class tab extends PlutoComponent {
     #_contents;
     constructor(props) {
