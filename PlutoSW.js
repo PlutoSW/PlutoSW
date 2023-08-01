@@ -99,9 +99,7 @@ class PlutoComponent extends HTMLElement {
         this?.onIsolatedState?.(name, old, ne);
     }
     child(...child) {
-        if (child[0] instanceof PlutoElement) {
-            child = this.beforeRender(child);
-        }
+        child = this.beforeRender(child);
         if (child) {
             if (typeof child[0] == "function") {
                 var els = child[0](this);
@@ -639,10 +637,10 @@ class PlutoElement {
         return this;
     }
     prev() {
-        return new PlutoElement(this.element.previousElementSibling);
+        return this.element?.previousElementSibling ? new PlutoElement(this.element.previousElementSibling) : null;
     }
     next() {
-        return new PlutoElement(this.element.nextElementSibling);
+        return this.element?.nextElementSibling ? new PlutoElement(this.element.nextElementSibling) : null;
     }
     /**
      * @param {string} text
