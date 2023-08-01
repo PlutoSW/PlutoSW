@@ -44,7 +44,7 @@
 
 <div id="root"></div>
 
-`html
+```html
 <script type="module" src="init.js"></script>
 <style>
     div#root {
@@ -80,4 +80,4 @@
         color: #fff;
     }
 </style>
-`
+```
