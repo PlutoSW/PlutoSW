@@ -583,6 +583,7 @@ class PlutoElement {
      */
     child(...elements) {
         elements = this.beforeRender(elements);
+
         try {
             this.element.append(...elements);
         } catch (error) {
@@ -626,7 +627,9 @@ class PlutoElement {
         }
         return this;
     }
-
+    parent(){
+        return new PlutoElement(this.element.parentNode);
+    }
     after(...elements) {
         elements = this.beforeRender(elements);
         try {
