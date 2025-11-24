@@ -10,17 +10,25 @@ function implementContext(element, fn, options) {
 		navigator.platform === "iPod"
 	) {
 		let timer;
-		element.addEventListener("touchstart", (e) => {
-			e.composedPaths = e.composedPath();
-			timer = setTimeout(() => {
-				fn(e);
-			}, 1000);
-		}, options);
-		element.addEventListener("touchend", () => {
-			clearTimeout(timer);
-		}, options);
+		element.addEventListener(
+			"touchstart",
+			(e) => {
+				e.composedPaths = e.composedPath();
+				timer = setTimeout(() => {
+					fn(e);
+				}, 1000);
+			},
+			options
+		);
+		element.addEventListener(
+			"touchend",
+			() => {
+				clearTimeout(timer);
+			},
+			options
+		);
 		return;
-	}else{
+	} else {
 		element.addEventListener("contextmenu", fn, options);
 	}
 }
@@ -265,6 +273,9 @@ class PlutoComponent extends HTMLElement {
 		attrs = [...attrs.filter(Boolean)];
 		if (typeof attrs[0] === "string") {
 			if (attrs[1]) {
+				if (attrs[0] === "src") {
+					attrs[1] = attrs[1].replace("cdn.fuu.app", "cdn.fuu.com.tr");
+				}
 				this.setAttribute(attrs[0], attrs[1]);
 				return this;
 			} else {
@@ -281,6 +292,9 @@ class PlutoComponent extends HTMLElement {
 				}
 				this.setAttribute(r, attrData);
 			} else {
+				if (r === "src") {
+					rattrs = rattrs.replace("cdn.fuu.app", "cdn.fuu.com.tr");
+				}
 				this.setAttribute(r, rattrs);
 			}
 		}
@@ -314,14 +328,14 @@ class PlutoComponent extends HTMLElement {
 				if (event === "contextmenu") {
 					implementContext(this, fn, options);
 					return;
-				}else{
+				} else {
 					this.addEventListener(event, fn, options);
 				}
 			});
 		} else if (typeof ev == "object") {
 			Object.keys(ev).forEach((event) => {
 				if (event === "contextmenu") {
-					implementContext(this, ev[event],options);
+					implementContext(this, ev[event], options);
 					return;
 				}
 				this.addEventListener(event, ev[event], options);
@@ -353,7 +367,12 @@ class PlutoComponent extends HTMLElement {
 		return this;
 	}
 	text(text) {
+		if (!text) return this.textContent;
 		this.textContent = text;
+		return this;
+	}
+	html(html) {
+		this.innerHTML = html;
 		return this;
 	}
 }
@@ -814,6 +833,9 @@ class PlutoElement {
 		attrs = [...attrs.filter(Boolean)];
 		if (typeof attrs[0] === "string") {
 			if (attrs[1]) {
+				if (attrs[0] === "src") {
+					attrs[1] = attrs[1].replace("cdn.fuu.app", "cdn.fuu.com.tr");
+				}
 				this.element.setAttribute(attrs[0], attrs[1]);
 				return this;
 			} else {
@@ -830,6 +852,10 @@ class PlutoElement {
 				}
 				this.element.setAttribute(r, attrData);
 			} else {
+				if (r === "src") {
+					rattrs = rattrs.replace("cdn.fuu.app", "cdn.fuu.com.tr");
+				}
+
 				this.element.setAttribute(r, rattrs);
 			}
 		}
@@ -848,6 +874,29 @@ class PlutoElement {
 		} else {
 			return this.element.classList.toString();
 		}
+	}
+	width(width) {
+		if (width) {
+			this.element.style.width = width + "px";
+			return this;
+		} else {
+			return this.element.width || this.element.offsetWidth;
+		}
+	}
+	height(height) {
+		if (height) {
+			this.element.style.height = height + "px";
+			return this;
+		} else {
+			return this.element.height || this.element.offsetHeight;
+		}
+	}
+	offset() {
+		let rect = this.element.getBoundingClientRect();
+		return {
+			top: rect.top,
+			left: rect.left,
+		};
 	}
 	/**
 	 * @param {...name} name Example: ("class1","class2"...)
@@ -1023,6 +1072,7 @@ class PlutoElement {
 	}
 	src(src) {
 		if (typeof src !== "undefined") {
+			src.replace("cdn.fuu.app", "cdn.fuu.com.tr");
 			this.attr("src", src);
 			return this;
 		} else {
@@ -1116,7 +1166,7 @@ class PlutoElement {
 			if (ev === "contextmenu") {
 				implementContext(this.element, fn, options);
 				return;
-			}else{
+			} else {
 				this.element.addEventListener(event, fn, options);
 			}
 			this.element.addEventListener(ev, fn, options);
