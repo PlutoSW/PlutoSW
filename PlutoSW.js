@@ -4,11 +4,7 @@ window.PlutoDataSet = new Set();
 window.PlutoImplements = {};
 
 function implementContext(element, fn, options) {
-	if (
-		navigator.platform === "iPhone" ||
-		navigator.platform === "iPad" ||
-		navigator.platform === "iPod"
-	) {
+	if (navigator.platform === "iPhone" || navigator.platform === "iPad" || navigator.platform === "iPod") {
 		let timer;
 		element.addEventListener(
 			"touchstart",
@@ -18,14 +14,14 @@ function implementContext(element, fn, options) {
 					fn(e);
 				}, 1000);
 			},
-			options
+			options,
 		);
 		element.addEventListener(
 			"touchend",
 			() => {
 				clearTimeout(timer);
 			},
-			options
+			options,
 		);
 		return;
 	} else {
@@ -81,7 +77,7 @@ class PlutoComponent extends HTMLElement {
 					this.dispatchEvent(new CustomEvent("invisible"));
 				}
 			},
-			{ threshold: [0.5] }
+			{ threshold: [0.5] },
 		);
 		observer.observe(this);
 	}
@@ -103,6 +99,10 @@ class PlutoComponent extends HTMLElement {
 	}
 	hasClass(clas) {
 		return this.classList.contains(clas);
+	}
+	toggleClass(name) {
+		this.classList.toggle(name);
+		return this;
 	}
 	before(...elements) {
 		elements = this.beforeRender(elements);
@@ -214,11 +214,7 @@ class PlutoComponent extends HTMLElement {
 	}
 	parents(selector) {
 		let parent = this.closest(selector);
-		return parent
-			? parent instanceof PlutoComponent
-				? parent
-				: new PlutoElement(parent)
-			: null;
+		return parent ? (parent instanceof PlutoComponent ? parent : new PlutoElement(parent)) : null;
 	}
 	child(...child) {
 		if (Array.isArray(child[0])) {
@@ -231,6 +227,21 @@ class PlutoComponent extends HTMLElement {
 				this.append(els);
 			} else {
 				this.append(...child);
+			}
+		}
+		return this;
+	}
+	childPrepend(...child) {
+		if (Array.isArray(child[0])) {
+			child = child.flat();
+		}
+		child = this.beforeRender(child);
+		if (child) {
+			if (typeof child[0] == "function") {
+				var els = child[0](this);
+				this.prepend(els);
+			} else {
+				this.prepend(...child);
 			}
 		}
 		return this;
@@ -252,9 +263,7 @@ class PlutoComponent extends HTMLElement {
 			}
 			return new PlutoElement(this.childNodes[index]);
 		}
-		return [...this.childNodes].map((a) =>
-			a instanceof PlutoComponent ? a : new PlutoElement(a)
-		);
+		return [...this.childNodes].map((a) => (a instanceof PlutoComponent ? a : new PlutoElement(a)));
 	}
 	/**
 	 * @param {...name} attrs Example: ("src","href"...)
@@ -273,9 +282,6 @@ class PlutoComponent extends HTMLElement {
 		attrs = [...attrs.filter(Boolean)];
 		if (typeof attrs[0] === "string") {
 			if (attrs[1]) {
-				if (attrs[0] === "src") {
-					attrs[1] = attrs[1].replace("cdn.fuu.app", "cdn.fuu.com.tr");
-				}
 				this.setAttribute(attrs[0], attrs[1]);
 				return this;
 			} else {
@@ -292,9 +298,6 @@ class PlutoComponent extends HTMLElement {
 				}
 				this.setAttribute(r, attrData);
 			} else {
-				if (r === "src") {
-					rattrs = rattrs.replace("cdn.fuu.app", "cdn.fuu.com.tr");
-				}
 				this.setAttribute(r, rattrs);
 			}
 		}
@@ -541,8 +544,17 @@ const Pluto = {
 		}
 		return new PlutoElement(query);
 	},
+	queryAll: (query, scope = document) => {
+		if (scope instanceof PlutoElement) {
+			scope = scope.element;
+		}
+		if (typeof query === "string") {
+			return Array.from(scope.querySelectorAll(query)).map((el) => new PlutoElement(el));
+		}
+		return [];
+	},
 	queryData(data, value, scope = "body") {
-		return PlutoDataSet.filter((a) => a.closest(scope) && a.PlutoSW[data] == value);
+		return [...PlutoDataSet].filter((a) => a.closest(scope) && a.PlutoSW[data] == value);
 	},
 	isJson(str) {
 		try {
@@ -577,37 +589,25 @@ const Pluto = {
 				falseColor: "#569cd6",
 				nullColor: "#569cd6",
 			},
-			colorOptions
+			colorOptions,
 		);
-		json = Pluto.jsonPretty(json)
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;");
-		let replaced = json.replace(
-			/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+]?\d+)?)/g,
-			(match) => {
-				let color = colors.numberColor;
-				let style = "";
-				if (/^"/.test(match)) {
-					if (/:$/.test(match)) {
-						color = colors.keyColor;
-					} else {
-						color = colors.stringColor;
-						match = '"' + escapeHtml(match.substr(1, match.length - 2)) + '"';
-						style = { wordWrap: "break-word", whiteSpace: "pre-wrap" };
-					}
+		json = Pluto.jsonPretty(json).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		let replaced = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+]?\d+)?)/g, (match) => {
+			let color = colors.numberColor;
+			let style = "";
+			if (/^"/.test(match)) {
+				if (/:$/.test(match)) {
+					color = colors.keyColor;
 				} else {
-					color = /true/.test(match)
-						? colors.trueColor
-						: /false/.test(match)
-						? colors.falseColor
-						: /null/.test(match)
-						? colors.nullColor
-						: color;
+					color = colors.stringColor;
+					match = '"' + escapeHtml(match.substr(1, match.length - 2)) + '"';
+					style = { wordWrap: "break-word", whiteSpace: "pre-wrap" };
 				}
-				return Pluto.span.css({ color: color, ...style }).text(match);
+			} else {
+				color = /true/.test(match) ? colors.trueColor : /false/.test(match) ? colors.falseColor : /null/.test(match) ? colors.nullColor : color;
 			}
-		);
+			return Pluto.span.css({ color: color, ...style }).text(match);
+		});
 		return Pluto.pre
 			.css({
 				background: "#1e1e1e",
@@ -652,14 +652,26 @@ const Pluto = {
 		if (str) {
 			return str.slugify();
 		}
-		return (
-			str ||
-			"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-				var r = (Math.random() * 16) | 0,
-					v = c == "x" ? r : (r & 0x3) | 0x8;
-				return v.toString(16);
-			})
-		);
+
+		// Tireler kaldırıldı, maske tam 11 haneli: ilk 4 rastgele, 5. hane '4', son 6 rastgele
+		let id = "xxxx4xxxxxy".replace(/[xy]/g, function (c) {
+			// Havuzu genişletmek için (0-9, a-z) aralığı kullanıldı (base-36)
+			const r = (Math.random() * 36) | 0;
+			const v = c === "x" ? r : (r & 0x3) | 0x8;
+			return v.toString(36);
+		});
+
+		// İlk karakterin mutlaka harf olması gerekiyorsa:
+		if (!/^[a-zA-Z]/.test(id)) {
+			const letters = "abcdefghijklmnopqrstuvwxyz";
+			const first = letters.charAt(Math.floor(Math.random() * letters.length));
+			id = first + id.slice(1);
+		}
+
+		return id;
+	},
+	isUuid: (str) => {
+		return /^[a-zA-Z0-9]{4}4[a-zA-Z0-9]{6}$/.test(str);
 	},
 	jsonPretty: (json) => {
 		return JSON.stringify(json, undefined, 4);
@@ -719,10 +731,7 @@ window.PlutoNSSupport.forEach((e) => {
 	});
 });
 function isHtmlElement(element) {
-	return (
-		window.PlutoSupportedTags.includes(element) ||
-		window.PlutoNSSupport.map((a) => a[0]).includes(element)
-	);
+	return window.PlutoSupportedTags.includes(element) || window.PlutoNSSupport.map((a) => a[0]).includes(element);
 }
 class PlutoElement {
 	constructor(element, ns = null) {
@@ -833,9 +842,6 @@ class PlutoElement {
 		attrs = [...attrs.filter(Boolean)];
 		if (typeof attrs[0] === "string") {
 			if (attrs[1]) {
-				if (attrs[0] === "src") {
-					attrs[1] = attrs[1].replace("cdn.fuu.app", "cdn.fuu.com.tr");
-				}
 				this.element.setAttribute(attrs[0], attrs[1]);
 				return this;
 			} else {
@@ -852,10 +858,6 @@ class PlutoElement {
 				}
 				this.element.setAttribute(r, attrData);
 			} else {
-				if (r === "src") {
-					rattrs = rattrs.replace("cdn.fuu.app", "cdn.fuu.com.tr");
-				}
-
 				this.element.setAttribute(r, rattrs);
 			}
 		}
@@ -896,6 +898,8 @@ class PlutoElement {
 		return {
 			top: rect.top,
 			left: rect.left,
+			width: rect.width,
+			height: rect.height,
 		};
 	}
 	/**
@@ -1031,14 +1035,10 @@ class PlutoElement {
 		return this;
 	}
 	prev() {
-		return this.element?.previousElementSibling
-			? new PlutoElement(this.element.previousElementSibling)
-			: null;
+		return this.element?.previousElementSibling ? new PlutoElement(this.element.previousElementSibling) : null;
 	}
 	next() {
-		return this.element?.nextElementSibling
-			? new PlutoElement(this.element.nextElementSibling)
-			: null;
+		return this.element?.nextElementSibling ? new PlutoElement(this.element.nextElementSibling) : null;
 	}
 	/**
 	 * @param {string} text
@@ -1072,15 +1072,14 @@ class PlutoElement {
 	}
 	src(src) {
 		if (typeof src !== "undefined") {
-			src.replace("cdn.fuu.app", "cdn.fuu.com.tr");
 			this.attr("src", src);
 			return this;
 		} else {
 			return this.attr("src");
 		}
 	}
-	show() {
-		this.element.style.display = "block";
+	show(type = "block") {
+		this.element.style.display = type;
 		return this;
 	}
 	hide() {
@@ -1205,8 +1204,7 @@ class PlutoElement {
 }
 
 const arrayChangeMethod = ["push", "pop", "unshift", "shift", "splice", "sort", "reverse"];
-const { getOwnPropertyNames, getOwnPropertySymbols, defineProperty, getOwnPropertyDescriptor } =
-	Object;
+const { getOwnPropertyNames, getOwnPropertySymbols, defineProperty, getOwnPropertyDescriptor } = Object;
 
 function isObject(obj) {
 	return typeof obj === "object";
@@ -1225,7 +1223,7 @@ const getOwnKeys = isFunction(getOwnPropertySymbols)
 				obj = {};
 			}
 			return getOwnPropertyNames(obj).concat(getOwnPropertySymbols(obj));
-	  }
+		}
 	: getOwnPropertyNames;
 function deepObserve(obj, hook) {
 	const mapStore = {};
@@ -1245,8 +1243,7 @@ function deepObserve(obj, hook) {
 				return value;
 			},
 			set(val) {
-				if (val instanceof PlutoElement === false && (isObject(val) || isArray(val)))
-					deepObserve(val, hook);
+				if (val instanceof PlutoElement === false && (isObject(val) || isArray(val))) deepObserve(val, hook);
 				mapStore[key] = true;
 				const old = value;
 				value = val;
@@ -1271,9 +1268,7 @@ function deepObserve(obj, hook) {
 					originFn.bind(obj)(...args);
 					arrayChanging = false;
 					if (obj.length > originLength) {
-						const keys = new Array(obj.length - originLength)
-							.fill(1)
-							.map((value, index) => (index + originLength).toString());
+						const keys = new Array(obj.length - originLength).fill(1).map((value, index) => (index + originLength).toString());
 						keys.forEach((key) => wrapProperty(key));
 					}
 					hook(key, origin, obj);
